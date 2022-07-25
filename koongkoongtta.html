@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 
+        1. 입력할 수 있는 글자는 '세글자'
+        2. prompt 함수를 이용해 몇 명이 참가할지 선택
+        3. 취소를 누를 경우 실행 x
+     -->
+    <div><span id="index">1</span>번째 참가자</div>
+    <div>제시어 : <span id="word"></span></div>
+    <input id="inWord"><button id="inBtn">입력</button>
+    <script>
+        const order = Number(prompt('몇 명이 참가하나요?')); // 참가자 수
+        if(order){
+            const $index = document.querySelector('#index'); // 입력된 참가자 수 span 
+            const $word = document.querySelector('#word'); // 제시어 span
+            const $inWord = document.querySelector('#inWord'); // 제시어 input
+            const $inBtn = document.querySelector('#inBtn'); // button
+            
+            const clickFn = () => {
+                let word = $word.textContent;
+                let inWord = $inWord.value;
+                
+                if (inWord.length !== 3) {
+                    alert('다시 입력해주세요.');
+                    $inWord.value = '';
+                    return;
+                }
+                if (word === '' || word[word.length - 1] === inWord[0]) {
+                    let index = Number($index.textContent);
+                    if (index >= order) {
+                        index = 1;
+                        $index.textContent = index;
+                    } else {
+                        $index.textContent = index + 1;
+                    }
+                    $word.textContent = inWord;
+                    $inWord.value = '';
+                } else {
+                    alert('올바르지 않은 단어입니다.');
+                    $inWord.value = ''; 
+                }
+            }        
+            $inBtn.addEventListener('click', clickFn);
+        } else {
+            alert('종료되었습니다.');
+        }
+       
+    </script>
+</body>
+
+</html>
