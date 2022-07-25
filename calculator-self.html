@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator-self</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #result {
+            width: 180px;
+            height: 50px;
+            margin: 5px;
+            text-align: right;
+        }
+
+        #operator {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            text-align: center;
+        }
+
+        button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <input readonly id="operator">
+    <input readonly type="number" id="result">
+    <div class="row">
+        <button id="num-7">7</button>
+        <button id="num-8">8</button>
+        <button id="num-9">9</button>
+        <button id="plus">+</button>
+    </div>
+    <div class="row">
+        <button id="num-4">4</button>
+        <button id="num-5">5</button>
+        <button id="num-6">6</button>
+        <button id="minus">-</button>
+    </div>
+    <div class="row">
+        <button id="num-1">1</button>
+        <button id="num-2">2</button>
+        <button id="num-3">3</button>
+        <button id="devide">/</button>
+    </div>
+    <div class="row">
+        <button id="clear">C</button>
+        <button id="num-0">0</button>
+        <button id="calculate">=</button>
+        <button id="multiply">*</button>
+    </div>
+    <script>
+        const $result = document.querySelector('#result');
+        const $operator = document.querySelector('#operator');
+
+        let numOne = '';
+        let numTwo = '';
+        let operator = '';
+        let result = '';
+
+        const clickNumber = (event) => {
+            if (!numOne && operator === '-') {
+                numOne = operator + event.target.textContent;
+                $result.value = numOne;
+                return;
+            }
+            if (!numOne || !operator) {
+                numOne = event.target.textContent;
+                $result.value = event.target.textContent;
+                return;
+            }
+            numTwo = event.target.textContent;
+            if (operator === '+') {
+                result = parseInt(numOne) + parseInt(numTwo);
+            } else if (operator === '-') {
+                result = numOne - numTwo;
+            } else if (operator === '/') {
+                result = numOne / numTwo;
+            } else if (operator === '*') {
+                result = numOne * numTwo;
+            }
+            $result.value = result;
+            numOne = result;
+            numTwo = '';
+            operator = '';
+
+        }
+        document.querySelector('#num-0').addEventListener('click', clickNumber);
+        document.querySelector('#num-1').addEventListener('click', clickNumber);
+        document.querySelector('#num-2').addEventListener('click', clickNumber);
+        document.querySelector('#num-3').addEventListener('click', clickNumber);
+        document.querySelector('#num-4').addEventListener('click', clickNumber);
+        document.querySelector('#num-5').addEventListener('click', clickNumber);
+        document.querySelector('#num-6').addEventListener('click', clickNumber);
+        document.querySelector('#num-7').addEventListener('click', clickNumber);
+        document.querySelector('#num-8').addEventListener('click', clickNumber);
+        document.querySelector('#num-9').addEventListener('click', clickNumber);
+        const clickOperator = (op) => () => {
+            if (numOne === '') {
+                if (op === '-') {
+                    operator = op;
+                    return;            
+                } 
+                alert('숫자를 먼저 입력해주세요.');
+                return;
+            }
+            operator = op;
+            $operator.value = operator;
+
+        }
+        document.querySelector('#plus').addEventListener('click', clickOperator('+'));
+        document.querySelector('#minus').addEventListener('click', clickOperator('-'));
+        document.querySelector('#devide').addEventListener('click', clickOperator('/'));
+        document.querySelector('#multiply').addEventListener('click', clickOperator('*'));
+        document.querySelector('#calculate').addEventListener('click', () => {
+            if (!numOne || !numTwo || !operator) {
+                alert('값과 연산자를 모두 입력해주세요.');
+                return;
+            }
+            if (operator === '+') {
+                result = parseInt(numOne) + parseInt(numTwo);
+            } else if (operator === '-') {
+                result = numOne - numTwo;
+                
+            } else if (operator === '/') {
+                result = numOne / numTwo;
+            } else if (operator === '*') {
+                result = numOne * numTwo;
+            }
+            $result.value = result;
+            numOne = result;
+            numTwo = '';
+            operator = '';
+        });
+        document.querySelector('#clear').addEventListener('click', () => {
+            numOne = '';
+            numTwo = '';
+            operator = '';
+            $result.value = '';
+            $operator.value = '';
+        });
+    </script>
+</body>
+
+</html>
