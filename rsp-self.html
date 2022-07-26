@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>가위바위보</title>
+    <style>
+        #computer {
+            width: 142px;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="computer"></div>
+    <div>
+        <button id="scissors" class="btn">가위</button>
+        <button id="rock" class="btn">바위</button>
+        <button id="paper" class="btn">보</button>
+    </div>
+    <div id="score">0</div>
+    <script>
+        // 1. 가위바위보 이미지를 0.05초마다 번갈아가며 출력한다.
+        // 2. 버튼을 클릭하면 이미지가 1초동안 멈춘다
+        // 3. 컴퓨터의 값과 내가 입력한 값을 비교하여 승, 무승부, 패를 출력한다.
+        // 4. 승리할 경우 1점을 더하여 3점을 먼저 얻는 쪽을 출력한다 ex) 컴퓨터 승리! 3:1
+
+        const $computer = document.querySelector('#computer');
+        const $scissors = document.querySelector('#scissors');
+        const $rock = document.querySelector('#rock');
+        const $paper = document.querySelector('#paper');
+        const $score = document.querySelector('#score');
+        const IMG_URL = './rsp.png';
+        const rspX = {
+            scissors: '0px',
+            rock: '-220px',
+            paper: '-440px'
+        };
+
+
+        let rspVal = 'scissors';
+        const changeRsp = () => {
+            if (rspVal === 'scissors') {
+                rspVal = 'rock';
+            } else if (rspVal === 'rock') {
+                rspVal = 'paper';
+            } else if (rspVal === 'paper') {
+                rspVal = 'scissors';
+            }
+            $computer.style.background = `url(${IMG_URL}) ${rspX[rspVal]} 0`;
+            $computer.style.backgroundSize = 'auto 200px';
+        };
+
+
+        let intervalId = setInterval(changeRsp, 50);
+        let flag = true; // removeEventListener의 방법도 있지만 복잡하고 버그가 있을 수 있으므로 flag를 사용
+        const rspNum = { // 가위: -1, 바위: 0, 보: 1
+            scissors: -1,
+            rock: 0,
+            paper: 1
+        };
+
+        let computerScore = 0;
+        let userScore = 0;
+        const clickBtn = () => {
+            if (flag) {
+                clearInterval(intervalId);
+                flag = false;
+
+                const targetId = event.target.id;
+                const userRsp = rspNum[targetId]; // 사용자 입력값
+                const computerRsp = rspNum[rspVal]; // 컴퓨터 입력값
+                const diff = userRsp - computerRsp; // 사용자 - 컴퓨터
+
+                if ([2, -1].includes(diff)) { // 패 : 2, -1
+                    computerScore += 1; 
+                    $score.textContent = `${userScore}점 패배`;
+                } else if ([1, -2].includes(diff)) { // 승 : 1, -2
+                    userScore += 1;
+                    $score.textContent = `${userScore}점 승리`;
+                } else { // 무승부 : 0
+                    $score.textContent = `${userScore}점 무승부`;
+                }
+
+                if (computerScore >= 3) {
+                    $score.textContent = `${computerScore} : ${userScore} 컴퓨터 승리!`;
+                } else if (userScore >= 3) {
+                    $score.textContent = `${computerScore} : ${userScore} 사용자 승리!`;
+                } else {
+                    setTimeout(() => {
+                        flag = true;
+                        intervalId = setInterval(changeRsp, 50);
+                    }, 1000);
+                }
+            }
+        };
+
+        $scissors.addEventListener('click', clickBtn);
+        $rock.addEventListener('click', clickBtn);
+        $paper.addEventListener('click', clickBtn);
+    </script>
+</body>
+
+</html>
