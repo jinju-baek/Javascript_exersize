@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>속도체크</title>
+    <style>
+        #screen {
+            width: 300px;
+            height: 200px;
+            text-align: center;
+            user-select: none;
+        }
+
+        #screen.waiting {
+            background-color: aqua;
+        }
+
+        #screen.ready {
+            background-color: red;
+            color: white;
+        }
+
+        #screen.now {
+            background-color: greenyellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="screen" class="waiting">클릭해서 시작하세요.</div>
+    <div id="result"></div>
+    <script>
+        // 1. 초기화면(파란색)에서 클릭하면 준비화면(빨간색)으로 넘어간다.
+        // 2. 준비화면(빨간색)에서 지정된 시간이 지나면 초세는 화면(초록색)으로 넘어간다.
+        // 3. 준비화면(빨간색)에서 클릭할 경우 성급하다는 메세지와 함께 초기화면(파란색)으로 넘어간다.
+        // 4. 초세는 화면(초록색)으로 넘어갔을 때 클릭하면 걸린시간을 계산하여 출력한다.
+        // 5. 걸린시간들의 평균도 함께 출력한다.
+        // 6. 가장 빠른 다섯 번의 시도를 출력한다.
+
+        const $screen = document.querySelector('#screen');
+        const $result = document.querySelector('#result');
+
+        let startTime;
+        let endTime;
+        let timeOutId;
+        const times = [];
+        $screen.addEventListener('click', (event) => {
+            if (event.target.classList.contains('waiting')) {
+                $screen.classList.remove('waiting');
+                $screen.classList.add('ready');
+                $screen.textContent = '초록색이 되면 클릭하세요';
+                timeOutId = setTimeout(() => {
+                    startTime = new Date();
+                    $screen.classList.remove('ready');
+                    $screen.classList.add('now');
+                    $screen.textContent = '클릭하세요!';
+                }, Math.floor(Math.random() * 1000) + 2000);
+            } else if (event.target.classList.contains('ready')) {
+                clearTimeout(timeOutId);
+                $screen.classList.remove('ready');
+                $screen.classList.add('waiting');
+                $screen.textContent = '너무 성급하네요!';
+            } else if (event.target.classList.contains('now')) {
+                endTime = new Date();
+                const diff = endTime - startTime;
+                times.push(diff);
+                times.sort((a, b) => a - b);
+                const avg = times.reduce((a, c) => a + c) / times.length;
+                // 가장 빠른 다섯번의 시도를 출력
+                const topFive = times.slice(0, 5);
+                $result.textContent = `현재 : ${diff}ms / 평균 : ${avg}ms`;
+                topFive.forEach((e, i) => {
+                    $result.append(document.createElement('br'), `${i + 1}위 : ${topFive[i]}ms`);
+                });
+                $screen.classList.remove('now');
+                $screen.classList.add('waiting');
+                $screen.textContent = '클릭해서 시작하세요';
+            }
+        });
+    </script>
+</body>
+
+</html>
