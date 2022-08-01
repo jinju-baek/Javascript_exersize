@@ -17,108 +17,90 @@
     </style>
 </head>
 
-
 <body>
     <script>
-        // 구조분해 할당
-        // 유사배열
-        // 이벤트 버블링, 이벤트 캡쳐링 $table.addEventListener('click', cb, true); 세번째 인자가 true일 경우 이벤트 캡쳐링 아닐경우 이벤트 버블링 
-        // 이벤트 버블링을 이용하여 target을 선택할 수 있다. event.target , event.currentTarget
-        // $table.parentNode, $table.children 부모자식 객체를 선택할 수 있다.
-        // every, some, flat
-        // array.from
-        const data = [];
+        // 1. 테이블을 생성한다
+        // 2. 클릭한 칸이 비어있을 경우 O나 X를 입력한다.
+        // 3. O와 X를 번갈아가며 입력한다.
+        // 4. 이겼을 경우 -님 승리라고 출력한다.
+        // 5. 모두 입력한 후에도 승부가 나지 않을 경우 무승부로 출력한다.
+
         const $table = document.createElement('table');
         const $result = document.createElement('div');
-        const rows = [];
+        const arr = [];
         let turn = 'O';
-        for (let i = 0; i < 3; i++) {
-            data.push([]);
-        }
 
-        const checkWinner = (target) => {
+        const hasWinner = (target) => {
             const rowIndex = target.parentNode.rowIndex;
             const cellIndex = target.cellIndex;
-            // 세 칸 다 채워졌는가?
-            let hasWinner = false;
-            // 가로줄 검사
-            if (
-                rows[rowIndex][0].textContent === turn &&
-                rows[rowIndex][1].textContent === turn &&
-                rows[rowIndex][2].textContent === turn
-            ) {
-                hasWinner = true;
-            }
-            // 세로줄 검사
-            if (
-                rows[0][cellIndex].textContent === turn &&
-                rows[1][cellIndex].textContent === turn &&
-                rows[2][cellIndex].textContent === turn
-            ) {
-                hasWinner = true;
-            } 
 
-            // 대각선 검사
+            // 승리 
             if (
-                rows[0][0].textContent === turn &&
-                rows[1][1].textContent === turn &&
-                rows[2][2].textContent === turn
+                arr[rowIndex][0].textContent === turn &&
+                arr[rowIndex][1].textContent === turn &&
+                arr[rowIndex][2].textContent === turn
             ) {
-                hasWinner = true;
+                return true;
             }
-
             if (
-                rows[0][2].textContent === turn &&
-                rows[1][1].textContent === turn &&
-                rows[2][0].textContent === turn 
+                arr[0][cellIndex].textContent === turn &&
+                arr[1][cellIndex].textContent === turn &&
+                arr[2][cellIndex].textContent === turn
             ) {
-                hasWinner = true;
+                return true;
             }
-            return hasWinner;
-
+            if (
+                arr[0][0].textContent === turn &&
+                arr[1][1].textContent === turn &&
+                arr[2][2].textContent === turn
+            ) {
+                return true;
+            }
+            if (
+                arr[0][2].textContent === turn &&
+                arr[1][1].textContent === turn &&
+                arr[2][0].textContent === turn
+            ) {
+                return true;
+            }
+            return false;
         }
 
         const callBack = (event) => {
-            if (event.target.textContent !== '') return; // 칸이 채워져 있는가?
-            event.target.textContent = turn; // 빈칸이면
+            if (event.target.textContent) return;
+            event.target.textContent = turn; 
 
-            // 승부 판단하기
-            if (checkWinner(event.target)) {
-                $result.textContent = `${turn}님이 승리!`;
+            if (hasWinner(event.target)) {
+                $result.textContent = `${turn}님 승리!`;
                 $table.removeEventListener('click', callBack);
-                return;
             }
 
-            //무승부 검사
-            let draw = true;
-            rows.forEach((row) => { 
-                row.forEach((cell) => {
-                    if (!cell.textContent) {
-                        draw = false;
-                    }
-                })
-            })
+            // 무승부 
+            let draw = true; 
+            arr.forEach((vals, i) => {
+                vals.forEach((val, i) => {
+                    if (!val.textContent) draw = false;
+                });
+            });
+
             if (draw) {
                 $result.textContent = `무승부`;
-                return;
-            }
-            
-            turn = turn === 'O' ? 'X' : 'O'; 
+            } 
+            turn = turn === 'O' ? 'X' : 'O';
         };
 
         for (let i = 0; i < 3; i++) {
             const $tr = document.createElement('tr');
-            const cells = [];
+            const row = [];
             for (let j = 0; j < 3; j++) {
                 const $td = document.createElement('td');
-                cells.push($td);
                 $tr.append($td);
+                row.push($td);
             }
-            rows.push(cells); 
             $table.append($tr);
+            $table.addEventListener('click', callBack);
+            arr.push(row);
         }
-
-        $table.addEventListener('click', callBack);
         document.body.append($table);
         document.body.append($result);
     </script>
