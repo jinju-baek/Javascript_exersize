@@ -84,7 +84,7 @@
             return false;
         };
 
-        const checkComputerTurn = (target) => {
+        const checkComputerTurn = (target) => () => {
             let emptyArr = [];
             const ri = target.parentNode.rowIndex; // 현재 선택한 타겟의 행 인덱스
             const ci = target.cellIndex; // 현재 선택한 타겟의 열 인덱스
@@ -136,26 +136,29 @@
             // 빈칸 채우기
             let turnChange = false;
             if (rcnt > 1) {
-                arr[ri].forEach((row, i) => {
-                    if (!row.textContent) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (!arr[ri][i].textContent) {
                         arr[ri][i].textContent = 'X';
                         turnChange = true;
+                        clickable = true;
                         if (checkWinnerAndDraw(arr[ri][i])) return;
                     }
-                });
+                }
             } else if (ccnt > 1) {
-                arr.forEach((cell, i) => {
-                    if (!cell[ci].textContent) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (!arr[i][ci].textContent) {
                         arr[i][ci].textContent = 'X';
                         turnChange = true;
+                        clickable = true;
                         if (checkWinnerAndDraw(arr[i][ci])) return;
                     }
-                });
+                }
             } else if (dlcnt > 1) {
                 for (let i = 0; i < arr.length; i++) {
                     if (!arr[i][i].textContent) {
                         arr[i][i].textContent = 'X';
                         turnChange = true;
+                        clickable = true;
                         if (checkWinnerAndDraw(arr[i][ci])) return;
                     }
                 }
@@ -164,6 +167,7 @@
                     if (!arr[i][arr.length - i - 1].textContent) {
                         arr[i][arr.length - i - 1].textContent = 'X';
                         turnChange = true;
+                        clickable = true;
                         if (checkWinnerAndDraw(arr[i][ci])) return;
                     }
                 }
@@ -175,9 +179,15 @@
             const $selTd = emptyArr[Math.floor(Math.random() * emptyArr.length)];
             $selTd.textContent = turn;
             if (checkWinnerAndDraw($selTd)) return;
+
+            clickable = true;
         };
 
+        let clickable = true;
         const callBack = (event) => {
+            if (!clickable) return;
+            clickable = false;
+
             if (event.target.textContent) return;
 
             // 사용자 턴일 때
@@ -185,7 +195,7 @@
             if (checkWinnerAndDraw(event.target)) return;
 
             // 컴퓨터 턴일 때
-            checkComputerTurn(event.target);
+            setTimeout(checkComputerTurn(event.target), 1000);
         };
 
         for (let i = 0; i < 3; i++) {
