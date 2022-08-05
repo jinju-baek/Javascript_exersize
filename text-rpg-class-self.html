@@ -183,18 +183,24 @@
             }
         }
 
-        class Hero {
-            constructor(game, name) {
-                this.game = game;
+        class Unit {
+            constructor(name, hp, xp, att) {
                 this.name = name;
-                this.lev = 1;
-                this.hp = 100;
-                this.maxHp = 100;
-                this.xp = 0;
-                this.att = 10;
+                this.hp = hp;
+                this.maxHp = hp;
+                this.xp = xp;
+                this.att = att;
             }
-            attack(monster) {
-                monster.hp -= this.att;
+            attack(target) {
+                target.hp -= this.att;
+            }
+        }
+
+        class Hero extends Unit {
+            constructor(game, name) {
+                super(name, 100, 0, 10);
+                this.game = game;
+                this.lev = 1;
             }
             heal() {
                 this.hp += 20;
@@ -216,16 +222,9 @@
             }
         }
 
-        class Monster {
+        class Monster extends Unit {
             constructor(name, hp, xp, att) {
-                this.name = name;
-                this.hp = hp;
-                this.maxHp = hp;
-                this.xp = xp;
-                this.att = att;
-            }
-            attack(target) {
-                target.hp -= this.att;
+                super(name, hp, xp, att);
             }
         }
 
