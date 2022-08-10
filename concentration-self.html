@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>짝맞추기</title>
+    <style>
+        .card {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            width: 70px;
+            height: 100px;
+            perspective: 140px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front {
+            background: navy;
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            backface-visibility: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper"></div>
+    <script>
+        // 1. 카드를 12장을 랜덤으로 섞는다.
+        // 2. 사용자가 카드를 뒤집을 경우 카드 두개가 같은 색상이면 다시 뒤집지 않는다.
+        // 3. 모든 카드가 뒤집어진 경우 축하한다는 메시지 출력
+
+        const $wrapper = document.querySelector('#wrapper');
+        const colors = ['red', 'pink', 'orange', 'yellow', 'white', 'green'];
+        const total = 12;
+        let colorCopy = colors.concat(colors);
+        let shuffled = [];
+
+        function shuffle() { // 피셔-예이츠 셔플
+            for (let i = 0; i < total; i++) {
+                const index = Math.floor(Math.random() * colorCopy.length);
+                shuffled = shuffled.concat(colorCopy.splice(index, 1));
+            }
+        }
+
+        function onClickCard() {
+            this.classList.add('flipped');
+
+            setTimeout(() => {
+                this.classList.remove('flipped');
+            }, 1000);
+        }
+
+        function createCard(i) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const cardInner = document.createElement('div');
+            cardInner.className = 'card-inner';
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-front';
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+            cardBack.style.backgroundColor = shuffled[i];
+            cardInner.appendChild(cardFront);
+            cardInner.appendChild(cardBack);
+            card.appendChild(cardInner);
+            card.addEventListener('click', onClickCard);
+            $wrapper.appendChild(card);
+        }
+
+        function startGame() {
+            shuffle();
+            for (let i = 0; i < shuffled.length; i++) {
+                createCard(i);
+            }
+
+        }
+
+        startGame();
+
+    </script>
+</body>
+</html>
