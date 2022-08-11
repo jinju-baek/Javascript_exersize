@@ -44,6 +44,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="wrapper"></div>
     <script>
@@ -56,6 +57,9 @@
         const total = 12;
         let colorCopy = colors.concat(colors);
         let shuffled = [];
+        let clicked = [];
+        let completed = [];
+        let cickable = false;
 
         function shuffle() { // 피셔-예이츠 셔플
             for (let i = 0; i < total; i++) {
@@ -64,12 +68,54 @@
             }
         }
 
+        function restart() {
+            $wrapper.innerHTML = '';
+            startGame(); 
+        }
+
+        // 버그 1 - 시작 시 카드가 뒤집어짐 -> 해결
+        // 버그 2 - 카드 3장이상 뒤집을 경우 2장만 뒤집어짐 -> 해결
+        // 버그 3 - 같은 카드를 클릭할 수 있음
+        // 버그 4 - 이미 짝을 맞춘 카드를 계속 클릭하면 승리로 인식 
         function onClickCard() {
+            if (!clickable || clicked[0] === this || completed.includes(this)) {
+                return;
+            }
             this.classList.add('flipped');
 
+            // 카드 두개가 같은 색상일 경우 뒤집지 않고, 다른 색상일 경우 뒤집는다
+            clicked.push(this);
+
+            // 1. 클릭은 2번까지만 할 수 있도록 한다.
+            if (clicked.length < 2) {
+                return;
+            }
+            clickable = false;
+            const firstBackColor = clicked[0].querySelector('.card-back').style.backgroundColor;
+            const secondBackColor = clicked[1].querySelector('.card-back').style.backgroundColor;
+            if (firstBackColor === secondBackColor) { // 뒤집은 두개의 카드의 색이 같은가?
+                completed = completed.concat(clicked);
+                clicked = [];
+                clickable = true;
+                if (completed.length === total) { // 모든 카드를 다 맞췄는가?
+                    setTimeout(() => {
+                        alert('축하합니다!');
+                        clickable = false;
+                        completed = [];
+                        restart();
+                        return;
+                    }, 1000);
+                }
+                return;
+            }
+
+            // 2. 같은 색상인지 확인 후 다른 색상일 경우 뒤집는다.
             setTimeout(() => {
-                this.classList.remove('flipped');
-            }, 1000);
+                clicked[0].classList.remove('flipped');
+                clicked[1].classList.remove('flipped');
+                clicked = [];
+                clickable = true;
+            }, 500);
         }
 
         function createCard(i) {
@@ -85,20 +131,35 @@
             cardInner.appendChild(cardFront);
             cardInner.appendChild(cardBack);
             card.appendChild(cardInner);
-            card.addEventListener('click', onClickCard);
-            $wrapper.appendChild(card);
+            card.addEventListener('click', onClickCard); // 카드 클릭이벤트 추가
+            return card;
         }
 
         function startGame() {
+            clickable = false;
             shuffle();
             for (let i = 0; i < shuffled.length; i++) {
-                createCard(i);
+                const card = createCard(i);
+                $wrapper.appendChild(card);
             }
 
+            document.querySelectorAll('.card').forEach((card, index) => { // 시작 시 전체 카드 한 번씩 뒤집기
+                setTimeout(() => {
+                    card.classList.add('flipped');
+                }, 1000 + 100 * index);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('.card').forEach((card) => { // 한 번씩 뒤집은 카드들 다시 뒤집기
+                    card.classList.remove('flipped');
+                });
+                clickable = true;
+            }, 5000);
         }
 
         startGame();
 
     </script>
 </body>
+
 </html>
