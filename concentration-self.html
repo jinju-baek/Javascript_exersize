@@ -48,21 +48,25 @@
 <body>
     <div id="wrapper"></div>
     <script>
-        // 1. 카드를 12장을 랜덤으로 섞는다.
-        // 2. 사용자가 카드를 뒤집을 경우 카드 두개가 같은 색상이면 다시 뒤집지 않는다.
-        // 3. 모든 카드가 뒤집어진 경우 축하한다는 메시지 출력
+        // 1. 카드 개수를 짝수로 입력받는다.
+        // 2. 카드를 랜덤으로 섞는다.
+        // 3. 사용자가 카드를 뒤집을 경우 카드 두개가 같은 색상이면 다시 뒤집지 않는다.
+        // 4. 모든 카드가 뒤집어진 경우 축하한다는 메시지 출력
+
+        let inCount = null;
+        let colorSlice = null;
+        let colorCopy = null;
+        let startTime = null;
 
         const $wrapper = document.querySelector('#wrapper');
-        const colors = ['red', 'pink', 'orange', 'yellow', 'white', 'green'];
-        const total = 12;
-        let colorCopy = colors.concat(colors);
+        const colors = ['red', 'pink', 'orange', 'yellow', 'white', 'green', 'blue', 'black', 'grey', 'puple'];
         let shuffled = [];
         let clicked = [];
         let completed = [];
         let cickable = false;
 
         function shuffle() { // 피셔-예이츠 셔플
-            for (let i = 0; i < total; i++) {
+            for (let i = 0; i < inCount; i++) {
                 const index = Math.floor(Math.random() * colorCopy.length);
                 shuffled = shuffled.concat(colorCopy.splice(index, 1));
             }
@@ -70,7 +74,7 @@
 
         function restart() {
             $wrapper.innerHTML = '';
-            startGame(); 
+            startGame();
         }
 
         // 버그 1 - 시작 시 카드가 뒤집어짐 -> 해결
@@ -97,11 +101,13 @@
                 completed = completed.concat(clicked);
                 clicked = [];
                 clickable = true;
-                if (completed.length === total) { // 모든 카드를 다 맞췄는가?
+                if (completed.length === inCount) { // 모든 카드를 다 맞췄는가?
                     setTimeout(() => {
-                        alert('축하합니다!');
+                        let endTime = new Date(); 
+                        alert(`${(endTime - startTime)/1000}초가 걸렸습니다. 축하합니다!`);
                         clickable = false;
                         completed = [];
+                        shuffled = [];
                         restart();
                         return;
                     }, 1000);
@@ -136,6 +142,11 @@
         }
 
         function startGame() {
+            inCount = parseInt(prompt('카드 개수를 짝수로 입력하세요.(최대 20)'));
+            colorSlice = colors.slice(0, inCount / 2);
+            colorCopy = colorSlice.concat(colorSlice);
+            startTime = new Date(); 
+
             clickable = false;
             shuffle();
             for (let i = 0; i < shuffled.length; i++) {
@@ -163,3 +174,7 @@
 </body>
 
 </html>
+
+
+
+
